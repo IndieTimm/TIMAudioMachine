@@ -2,6 +2,42 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+[System.Serializable]
+public class MidiNoteInfo
+{
+    public float StartTime;
+    public float Length;
+    public int Note;
+}
+
+[System.Serializable]
+public class MidiPlayer
+{
+    [SerializeField] private bool IsRepeate = true;
+    [SerializeField] private MidiNoteInfo[] notes = new MidiNoteInfo[0];
+
+    public MidiNoteInfo[] GetNotes(float time)
+    {
+        if (IsRepeate)
+        {
+            var begin = notes.Min(x => x.StartTime);
+            var end = notes.Max(x => x.StartTime + x.Length);
+
+            time = begin + Mathf.Repeat(time, end - begin);
+        }
+
+        return notes.Where(x => IsCross(time, x))
+            .ToArray();
+    }
+
+    private bool IsCross(float time, MidiNoteInfo info)
+    {
+        var t = time - info.StartTime;
+
+        return t >= 0 && t <= info.Length;
+    }
+}
+
 public static class PianoHelper
 {
     private const float frequency = 440;
@@ -22,6 +58,8 @@ public class AnalogPianoModel
 
 public class AnalogPiano : AudioMachineDevice<AnalogPianoModel>
 {
+    [SerializeField] private bool isPlaying;
+    [SerializeField] private MidiPlayer player = null;
     [SerializeField] private float angle = 10;
     [SerializeField] private Vector3 axis = Vector3.right;
     [SerializeField] private int noteIndexOffset = 0;
@@ -44,6 +82,9 @@ public class AnalogPiano : AudioMachineDevice<AnalogPianoModel>
 
     private void Awake()
     {
+        var playButton = GetComponentsInChildren<Button>().FirstOrDefault(x => x.name == "Play");
+        playButton?.RegisterClickCallback(PlayStop);
+
         var upButton = GetComponentsInChildren<Button>().FirstOrDefault(x => x.name == "Up");
         upButton?.RegisterClickCallback(() => ChangeOctave(1));
 
@@ -62,6 +103,16 @@ public class AnalogPiano : AudioMachineDevice<AnalogPianoModel>
         }
 
         outputInterface = GetAnalogInterfaces().Find(x => x.Id == "Output");
+    }
+
+    private void PlayStop()
+    {
+        isPlaying = !isPlaying;
+
+        if (!isPlaying)
+        {
+            holdedKeys.Clear();
+        }
     }
 
     private void ChangeOctave(int delta)
@@ -102,6 +153,14 @@ public class AnalogPiano : AudioMachineDevice<AnalogPianoModel>
         }
     }
 
+    private void FixedUpdate()
+    {
+        if (isPlaying)
+        {
+            holdedKeys = player.GetNotes(Time.time).Select(x => x.Note).ToList();
+        }
+    }
+
     private void PressKeyButton(GameObject key)
     {
         var index = keys.FindIndex(x => x == key);
@@ -127,7 +186,7 @@ public class AnalogPiano : AudioMachineDevice<AnalogPianoModel>
     {
         var phase = time * PianoHelper.GetFrequency(noteIndex);
 
-        var value = OscilationMath.Sin(phase);
+        var value = OscilationMath.Sin(phase) * 5;
 
         return Mathf.Clamp(value, -5F, 5F);
     }

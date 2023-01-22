@@ -32,6 +32,11 @@ public abstract class AudioMachineDevice : MonoBehaviour
 
 public abstract class AudioMachineDevice<TState> : AudioMachineDevice, IManagedObject, IIdentificatedObject
 {
+    public TState State
+    {
+        get => state;
+    }
+
     [SerializeField] protected TState state = default;
     [SerializeField] private string id = "Default_Device";
 

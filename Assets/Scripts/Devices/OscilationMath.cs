@@ -7,6 +7,11 @@ public static class OscilationMath
         return (float)Math.Sin(time * Math.PI * 2);
     }
 
+    public static float Cos(double time)
+    {
+        return (float)Math.Cos(time * Math.PI * 2);
+    }
+
     public static float Quad(double time)
     {
         var sin = (float)Math.Sin(time * Math.PI * 2);

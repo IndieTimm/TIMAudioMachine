@@ -25,7 +25,7 @@ public class Oscilator : AudioMachineDevice<OscilatorModel>, IDisplayDataSource<
 
     public float GetData()
     {
-        var freqFactor = (Mathf.Clamp(state.Frequency, 0.01F, 84));
+        var freqFactor = (Mathf.Clamp(state.Frequency, 1F, 84));
         var multiplyer = 1F / (5.5F * Mathf.Sqrt(freqFactor));
 
         return GetValue(Time.time * multiplyer);
@@ -46,7 +46,7 @@ public class Oscilator : AudioMachineDevice<OscilatorModel>, IDisplayDataSource<
         
         switch(state.Mode)
         {
-            case 0: value = OscilationMath.Sin(phase); break;
+            case 0: value = OscilationMath.Cos(phase); break;
             case 1: value = OscilationMath.PingPong(phase); break;
             case 2: value = OscilationMath.Quad(phase); break;
         }

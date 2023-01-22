@@ -1453,7 +1453,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 611437419802915329, guid: cd2b560c46c10b34b951ea3f94ddb221, type: 3}
       propertyPath: m_Materials.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 611437419802915329, guid: cd2b560c46c10b34b951ea3f94ddb221, type: 3}
       propertyPath: m_Positions.Array.size
@@ -1481,7 +1481,7 @@ PrefabInstance:
       objectReference: {fileID: 8320014887940091193}
     - target: {fileID: 664141410806593537, guid: cd2b560c46c10b34b951ea3f94ddb221, type: 3}
       propertyPath: displayRect.x
-      value: -0.012
+      value: 0.0125
       objectReference: {fileID: 0}
     - target: {fileID: 664141410806593537, guid: cd2b560c46c10b34b951ea3f94ddb221, type: 3}
       propertyPath: displayRect.width
